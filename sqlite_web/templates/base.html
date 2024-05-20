@@ -35,14 +35,14 @@
         <div class="page-header">
           {% block content_header %}
             {% if dataset.is_readonly %}
-              <a class="btn btn-sm btn-secondary float-right" href="{{ url_for('generic_query') }}">Query</a>
+              <a class="btn btn-sm btn-secondary float-right" href="{{ url_for('generic_query') }}">查询</a>
             {% else %}
               <form action="{{ url_for('table_create') }}" class="form-inline float-right" method="post" style="margin-top: 10px;">
                 <input name="redirect" type="hidden" value="{{ request.full_path }}" />{# full-path begins with "/" and includes querystring #}
-                <input class="form-control form-control-sm" name="table_name" placeholder="new_table_name" />
-                <button class="btn btn-primary btn-sm" type="submit">Create</button>
+                <input class="form-control form-control-sm" name="table_name" placeholder="新建数据表" />
+                <button class="btn btn-primary btn-sm" type="submit">新建</button>
                 &nbsp;
-                <a class="btn btn-sm btn-secondary" href="{{ url_for('generic_query') }}">Query</a>
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('generic_query') }}">查询</a>
               </form>
             {% endif %}
           {% endblock %}
@@ -52,7 +52,7 @@
       <div class="row">
         <div class="col-3" id="sidebar">
           {% block sidebar %}{% endblock %}
-          {% block logout %}{% if login_required %}<a href="{{ url_for('logout') }}">Log-out</a>{% endif %}{% endblock %}
+          {% block logout %}{% if login_required %}<a href="{{ url_for('logout') }}">退出</a>{% endif %}{% endblock %}
         </div>
         <div class="col-9" id="content">
           {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -71,7 +71,7 @@
             <p>
               Web-based SQLite database browser <span>v{{ version }}</span>, powered by
               <a href="http://flask.pocoo.org/">Flask</a> and <a href="http://docs.peewee-orm.com/">Peewee</a>.
-              &copy; {{ now.year }} <a href="http://charlesleifer.com/">Charles Leifer</a>
+              &copy; {{ now.year }} <a href="http://charlesleifer.com/">飘风剑汉化</a>
             </p>
           </footer>
         </div>
