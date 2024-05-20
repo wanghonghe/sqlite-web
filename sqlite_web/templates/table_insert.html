@@ -3,7 +3,7 @@
 {% block insert_tab_class %} active{% endblock %}
 
 {% block inner_content %}
-  <h3>Insert row into {{table }}
+  <h3>插入行到 {{table }}
     <input checked="checked" id="toggle-checkboxes" type="checkbox" />
   </h3>
   <form action="{{ url_for('table_insert', table=table) }}" method="post" role="form">
@@ -14,7 +14,7 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text">
-                <input {% if column.name in edited %}checked {% endif %}class="chk-enable-column" data-target-element="id_{{ column.name }}" tabindex="-1" type="checkbox" name="chk_{{ column.name }}" aria-label="Allow updating this column.">
+                <input {% if column.name in edited %}checked {% endif %}class="chk-enable-column" data-target-element="id_{{ column.name }}" tabindex="-1" type="checkbox" name="chk_{{ column.name }}" aria-label="允许更新这个列。">
               </div>
             </div>
             {% if column.data_type.lower() in ('text', 'blob') %}
@@ -28,7 +28,7 @@
           </div>
           <small class="form-text text-muted">
             {% if column.primary_key %}
-              <strong>Primary key.</strong>
+              <strong>主键。</strong>
             {% endif %}
             {{ column.data_type|default('ANY') }}{% if not column.null %} NOT NULL{% endif %}
             {% if column.default %}(default {{ column.default }}{% endif %}
@@ -36,7 +36,7 @@
         </div>
       </div>
     {% endfor %}
-    <button class="btn btn-primary" type="submit">Insert</button>
-    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">Cancel</a>
+    <button class="btn btn-primary" type="submit">插入</button>
+    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">取消</a>
   </form>
 {% endblock %}
