@@ -2,7 +2,7 @@
 
 {% block content_title %}
   {{ super() }}
-  <small>{{ ds_table.all().count() }} rows, showing page {{ page }}</small>
+  <small>{{ ds_table.all().count() }} 行, 显示页数 {{ page }}</small>
 {% endblock %}
 
 {% block content_tab_class %} active{% endblock %}
@@ -37,10 +37,10 @@
             <td>
               {% set pk = row|encode_pk(table_pk) %}
               {% if not is_view or 'update' in view_ops %}
-              <a class="small" href="{{ url_for('table_update', table=table, pk=pk) }}">Edit</a>
+              <a class="small" href="{{ url_for('table_update', table=table, pk=pk) }}">编辑</a>
               {% endif %}
               {% if not is_view or 'delete' in view_ops %}
-              <a class="small" href="{{ url_for('table_delete', table=table, pk=pk) }}">Delete</a>
+              <a class="small" href="{{ url_for('table_delete', table=table, pk=pk) }}">删除</a>
               {% endif %}
             </td>
           {% endif %}
