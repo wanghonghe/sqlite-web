@@ -6,51 +6,51 @@
   <table class="table table-striped">
     <tbody>
       <tr>
-        <th>Sqlite</th>
+        <th>Sqlite版本</th>
         <td>{{ sqlite.sqlite_version }}</td>
       </tr>
       <tr>
-        <th>Filename</th>
+        <th>数据库文件名</th>
         <td>{{ dataset.filename }}
           {% if dataset.is_readonly %}<strong>read-only</strong>{% endif %}
         </td>
       </tr>
       <tr>
-        <th>Size</th>
+        <th>大小</th>
         <td>{{ dataset.size_on_disk|filesizeformat }}</td>
       </tr>
       <tr>
-        <th>Created</th>
+        <th>创建时间</th>
         <td>{{ dataset.created.strftime('%A %B %d, %Y at %I:%M:%p') }}</td>
       </tr>
       <tr>
-        <th>Modified</th>
+        <th>修改时间</th>
         <td>{{ dataset.modified.strftime('%A %B %d, %Y at %I:%M:%p') }}</td>
       </tr>
       <tr>
-        <th>Tables</th>
+        <th>数据表数</th>
         <td>{{ dataset.tables|length }}</td>
       </tr>
       <tr>
-        <th>Indexes</th>
+        <th>索引数</th>
         <td>{{ dataset.get_all_indexes()|length }}</td>
       </tr>
       <tr>
-        <th>Triggers</th>
+        <th>触发器数</th>
         <td>{{ dataset.get_all_triggers()|length }}</td>
       </tr>
       <tr>
-        <th>Views</th>
+        <th>视图数</th>
         <td>{{ dataset.get_all_views()|length }}</td>
       </tr>
     </tbody>
   </table>
   <hr />
-  <h3>Query</h3>
+  <h3>查询</h3>
   <form action="{{ url_for('generic_query') }}" method="post" role="form">
     <div class="form-group">
-      <textarea class="form-control" name="sql" placeholder="Execute SQL query..." style="height: 120px;"></textarea>
+      <textarea class="form-control" name="sql" placeholder="执行查询..." style="height: 120px;"></textarea>
     </div>
-    <button class="btn btn-primary" type="submit">Execute</button>
+    <button class="btn btn-primary" type="submit">执行</button>
   </form>
 {% endblock %}
