@@ -1,7 +1,7 @@
 {% extends "base_table.html" %}
 
 {% block inner_content %}
-  <h3>Update row {{ table_pk|pk_display(pk) }} in {{ table }}
+  <h3>更新行 {{ table_pk|pk_display(pk) }} 到 {{ table }}
     <input id="toggle-checkboxes" type="checkbox" />
   </h3>
   <form action="{{ url_for('table_update', table=table, pk=pk) }}" method="post" role="form">
@@ -12,7 +12,7 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text">
-                <input {% if column.name in edited %}checked {% endif %}class="chk-enable-column" data-target-element="id_{{ column.name }}" type="checkbox" name="chk_{{ column.name }}" aria-label="Allow updating this column.">
+                <input {% if column.name in edited %}checked {% endif %}class="chk-enable-column" data-target-element="id_{{ column.name }}" type="checkbox" name="chk_{{ column.name }}" aria-label="允许更新此列。">
               </div>
             </div>
             {% if column.data_type.lower() in ('text', 'blob') %}
@@ -34,7 +34,7 @@
         </div>
       </div>
     {% endfor %}
-    <button class="btn btn-primary" type="submit">Update</button>
-    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">Cancel</a>
+    <button class="btn btn-primary" type="submit">更新</button>
+    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">取消</a>
   </form>
 {% endblock %}
