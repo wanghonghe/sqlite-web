@@ -1,7 +1,7 @@
 {% extends "base_table.html" %}
 
 {% block inner_content %}
-  <h3>Delete row {{ table_pk|pk_display(pk) }} from {{ table }}</h3>
+  <h3>删除行 {{ table_pk|pk_display(pk) }} 从 {{ table }}</h3>
   <form action="{{ url_for('table_delete', table=table, pk=pk) }}" method="post" role="form">
     <table class="table table-striped small">
       <tbody>
@@ -13,7 +13,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <button class="btn btn-primary" type="submit">Delete</button>
-    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">Cancel</a>
+    <button class="btn btn-primary" type="submit">删除</button>
+    <a class="btn btn-secondary" href="{{ url_for('table_content', table=table) }}">取消</a>
   </form>
 {% endblock %}
