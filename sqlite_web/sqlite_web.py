@@ -44,19 +44,19 @@ try:
         Flask, abort, flash, jsonify, make_response, redirect,
         render_template, request, session, url_for)
 except ImportError:
-    raise RuntimeError('Unable to import flask module. Install by running '
+    raise RuntimeError('无法导入flask模块。 请运行命令安装模块： '
                        'pip install flask')
 try:
     from markupsafe import Markup, escape
 except ImportError:
-    raise RuntimeError('Unable to import markupsafe module. Install by running'
+    raise RuntimeError('无法导入 markupsafe 模块。 请运行命令安装模块：'
                        ' pip install markupsafe')
 
 try:
     from pygments import formatters, highlight, lexers
 except ImportError:
     import warnings
-    warnings.warn('pygments library not found.', ImportWarning)
+    warnings.warn('找不到pygments 模块的library函数。', ImportWarning)
     syntax_highlight = lambda data: '<pre>%s</pre>' % data
 else:
     def syntax_highlight(data):
@@ -70,12 +70,12 @@ try:
     from peewee import __version__ as _pw_version
     peewee_version = tuple([int(p) for p in _pw_version.split('.')])
 except ImportError:
-    raise RuntimeError('Unable to import peewee module. Install by running '
+    raise RuntimeError('无法导入 peewee 模块。请运行命令安装模块： '
                        'pip install peewee')
 else:
     if peewee_version < (3, 0, 0):
-        raise RuntimeError('Peewee >= 3.0.0 is required. Found version %s. '
-                           'Please update by running pip install --update '
+        raise RuntimeError('需求：Peewee >= 3.0.0 。发现版本： %s. '
+                           '请运行pip install --update命令更新： '
                            'peewee' % _pw_version)
 
 from peewee import *
@@ -263,8 +263,8 @@ def login():
         if request.form.get('password') == app.config['PASSWORD']:
             session['authorized'] = True
             return redirect(session.get('next_url') or url_for('index'))
-        flash('The password you entered is incorrect.', 'danger')
-        app.logger.debug('Received incorrect password attempt from %s' %
+        flash('您输入的密码不正确。', 'danger')
+        app.logger.debug('收到错误密码尝试： %s' %
                          request.remote_addr)
     return render_template('login.html')
 
@@ -344,7 +344,7 @@ def _query_view(template, table=None):
             cursor = dataset.query(qsql)
         except Exception as exc:
             error = str(exc)
-            app.logger.exception('Error in user-submitted query.')
+            app.logger.exception('用户提交的查询出错。')
         else:
             data = cursor.fetchmany(rpp)
             data_description = cursor.description
@@ -452,15 +452,15 @@ def add_column(table):
                         name,
                         column_mapping[col_type](null=True)))
             except Exception as exc:
-                flash('Error attempting to add column "%s": %s' % (name, exc),
+                flash('尝试添加列时出错 "%s": %s' % (name, exc),
                       'danger')
-                app.logger.exception('Error attempting to add column.')
+                app.logger.exception('尝试添加列时出错。')
             else:
-                flash('Column "%s" was added successfully!' % name, 'success')
+                flash('列 "%s" 添加成功!' % name, 'success')
                 dataset.update_cache(table)
                 return redirect(url_for('table_structure', table=table))
         else:
-            flash('Name and column type are required.', 'danger')
+            flash('名称和列类型是必须的。', 'danger')
 
     return render_template(
         'add_column.html',
@@ -483,11 +483,11 @@ def drop_column(table):
             try:
                 migrate(migrator.drop_column(table, name))
             except Exception as exc:
-                flash('Error attempting to drop column "%s": %s' % (name, exc),
+                flash('尝试删除列时出错 "%s": %s' % (name, exc),
                       'danger')
-                app.logger.exception('Error attempting to drop column.')
+                app.logger.exception('尝试删除列时出错。')
             else:
-                flash('Column "%s" was dropped successfully!' % name, 'success')
+                flash('列 "%s" 删除成功!' % name, 'success')
                 dataset.update_cache(table)
                 return redirect(url_for('table_structure', table=table))
         else:
@@ -515,16 +515,15 @@ def rename_column(table):
             try:
                 migrate(migrator.rename_column(table, rename, rename_to))
             except Exception as exc:
-                flash('Error attempting to rename column "%s": %s' % (name, exc),
+                flash('尝试重命名列时出错 "%s": %s' % (name, exc),
                       'danger')
-                app.logger.exception('Error attempting to rename column.')
+                app.logger.exception('尝试重命名列时出错。')
             else:
-                flash('Column "%s" was renamed successfully!' % rename, 'success')
+                flash('列 "%s" 重命名成功!' % rename, 'success')
                 dataset.update_cache(table)
                 return redirect(url_for('table_structure', table=table))
         else:
-            flash('Column name is required and cannot conflict with an '
-                  'existing column\'s name.', 'danger')
+            flash('列名是必需的，并且不能与“现有列”的名称冲突。', 'danger')
 
     return render_template(
         'rename_column.html',
@@ -552,13 +551,13 @@ def add_index(table):
                         indexed_columns,
                         unique))
             except Exception as exc:
-                flash('Error attempting to create index: %s' % exc, 'danger')
-                app.logger.exception('Error attempting to create index.')
+                flash('尝试创建索引时出错: %s' % exc, 'danger')
+                app.logger.exception('尝试创建索引时出错。')
             else:
-                flash('Index created successfully.', 'success')
+                flash('创建索引成功', 'success')
                 return redirect(url_for('table_structure', table=table))
         else:
-            flash('One or more columns must be selected.', 'danger')
+            flash('必须选择一个或多个列。', 'danger')
 
     return render_template(
         'add_index.html',
@@ -580,10 +579,10 @@ def drop_index(table):
             try:
                 migrate(migrator.drop_index(table, name))
             except Exception as exc:
-                flash('Error attempting to drop index: %s' % exc, 'danger')
-                app.logger.exception('Error attempting to drop index.')
+                flash('尝试删除索引时出错: %s' % exc, 'danger')
+                app.logger.exception('尝试删除索引时出错。')
             else:
-                flash('Index "%s" was dropped successfully!' % name, 'success')
+                flash('索引 "%s" 删除成功!' % name, 'success')
                 return redirect(url_for('table_structure', table=table))
         else:
             flash('Index name is required.', 'danger')
@@ -608,10 +607,10 @@ def drop_trigger(table):
             try:
                 dataset.query('DROP TRIGGER "%s";' % name)
             except Exception as exc:
-                flash('Error attempting to drop trigger: %s' % exc, 'danger')
-                app.logger.exception('Error attempting to drop trigger.')
+                flash('尝试删除触发器时出错: %s' % exc, 'danger')
+                app.logger.exception('尝试删除触发器时出错。')
             else:
-                flash('Trigger "%s" was dropped successfully!' % name, 'success')
+                flash('触发器 "%s" 删除成功!' % name, 'success')
                 return redirect(url_for('table_structure', table=table))
         else:
             flash('Trigger name is required.', 'danger')
@@ -678,19 +677,19 @@ def minimal_validate_field(field, value):
     if value.lower().strip() == 'null':
         value = None
     if value is None and not field.null:
-        return 'NULL', 'Column does not allow NULL values.'
+        return 'NULL', '列不允许 NULL 值。'
     if value is None:
         return None, None
     if isinstance(field, IntegerField):
         try:
             _ = int(value)
         except Exception:
-            return value, 'Value is not a number.'
+            return value, '值不是一个数字。'
     elif isinstance(field, FloatField):
         try:
             _ = float(value)
         except Exception:
-            return value, 'Value is not a numeric/real.'
+            return value, '值不是一个整数或实数。'
     elif isinstance(field, BooleanField):
         if value.lower() not in ('1', '0', 'true', 'false', 't', 'f'):
             return value, 'Value must be 1, 0, true, false, t or f.'
@@ -699,7 +698,7 @@ def minimal_validate_field(field, value):
         try:
             value = base64.b64decode(value)
         except Exception as exc:
-            return value, 'Value must be base64-encoded binary data.'
+            return value, '值必须是base64编码的二进制数据。'
     try:
         field.db_value(value)
     except Exception as exc:
@@ -742,7 +741,7 @@ def table_insert(table):
                 insert[field] = value
 
         if errors:
-            flash('One or more errors prevented the row being inserted.',
+            flash('一个或多个错误阻止了行的插入。',
                   'danger')
         elif insert:
             try:
@@ -750,15 +749,15 @@ def table_insert(table):
                     n = model.insert(insert).execute()
             except Exception as exc:
                 flash('Insert failed: %s' % exc, 'danger')
-                app.logger.exception('Error attempting to insert row into %s.', table)
+                app.logger.exception('尝试将行插入时出错 %s.', table)
             else:
-                flash('Successfully inserted record (%s).' % n, 'success')
+                flash('成功插入记录 (%s).' % n, 'success')
                 return redirect(url_for(
                     'table_content',
                     table=table,
                     page='last'))
         else:
-            flash('No data was specified to be inserted.', 'warning')
+            flash('没有指定要插入的数据。', 'warning')
     else:
         edited = set(col_dict)  # Make all fields editable on load.
 
@@ -790,10 +789,10 @@ def table_update(table, pk):
     model = dataset[table].model_class
     table_pk = model._meta.primary_key
     if not table_pk:
-        flash('Table must have a primary key to perform update.', 'danger')
+        flash('表必须具有主键才能执行更新。', 'danger')
         return redirect(url_for('table_content', table=table))
     elif pk == '__uneditable__':
-        flash('Could not encode primary key to perform update.', 'danger')
+        flash('无法对主键进行编码以执行更新。', 'danger')
         return redirect(url_for('table_content', table=table))
 
     expr = decode_pk(model, pk)
@@ -801,7 +800,7 @@ def table_update(table, pk):
         obj = model.get(expr)
     except model.DoesNotExist:
         pk_repr = pk_display(table_pk, pk)
-        flash('Could not fetch row with primary-key %s.' % str(pk_repr), 'danger')
+        flash('无法获取具有主键的行 %s.' % str(pk_repr), 'danger')
         return redirect(url_for('table_content', table=table))
 
     columns = dataset.get_columns(table)
@@ -836,7 +835,7 @@ def table_update(table, pk):
                 update[field] = value
 
         if errors:
-            flash('One or more errors prevented the row being updated.',
+            flash('一个或多个错误阻止了行的更新。',
                   'danger')
         elif update:
             try:
@@ -844,12 +843,12 @@ def table_update(table, pk):
                     n = model.update(update).where(expr).execute()
             except Exception as exc:
                 flash('Update failed: %s' % exc, 'danger')
-                app.logger.exception('Error attempting to update row from %s.', table)
+                app.logger.exception('尝试从 %s 更新行时出错。', table)
             else:
-                flash('Successfully updated %s record.' % n, 'success')
+                flash('成功更新 %s 记录。' % n, 'success')
                 return redirect_to_previous(table)
         else:
-            flash('No data was specified to be updated.', 'warning')
+            flash('没有指定要更新的数据。', 'warning')
 
     return render_template(
         'table_update.html',
