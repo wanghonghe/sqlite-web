@@ -386,7 +386,7 @@ def require_table(fn):
 def table_create():
     table = (request.form.get('table_name') or '').strip()
     if not table:
-        flash('Table name is required.', 'danger')
+        flash('表名称是必需的。', 'danger')
         dest = request.form.get('redirect') or url_for('index')
         if not dest.startswith('/'):
             dest = '/' + dest
@@ -396,7 +396,7 @@ def table_create():
         dataset[table]
     except Exception as exc:
         flash('Error: %s' % str(exc), 'danger')
-        app.logger.exception('Error attempting to create table.')
+        app.logger.exception('尝试创建表时出错。')
     return redirect(url_for('table_import', table=table))
 
 @app.route('/<table>/')
@@ -842,7 +842,7 @@ def table_update(table, pk):
                 with dataset.transaction() as txn:
                     n = model.update(update).where(expr).execute()
             except Exception as exc:
-                flash('Update failed: %s' % exc, 'danger')
+                flash('更新失败: %s' % exc, 'danger')
                 app.logger.exception('尝试从 %s 更新行时出错。', table)
             else:
                 flash('成功更新 %s 记录。' % n, 'success')
@@ -868,10 +868,10 @@ def table_delete(table, pk):
     model = dataset[table].model_class
     table_pk = model._meta.primary_key
     if not table_pk:
-        flash('Table must have a primary key to perform delete.', 'danger')
+        flash('表必须具有主键才能执行删除。', 'danger')
         return redirect(url_for('table_content', table=table))
     elif pk == '__uneditable__':
-        flash('Could not encode primary key to perform delete.', 'danger')
+        flash('无法对主键进行编码以执行删除。', 'danger')
         return redirect(url_for('table_content', table=table))
 
     expr = decode_pk(model, pk)
@@ -879,7 +879,7 @@ def table_delete(table, pk):
         row = model.select().where(expr).dicts().get()
     except model.DoesNotExist:
         pk_repr = pk_display(table_pk, pk)
-        flash('Could not fetch row with primary-key %s.' % str(pk_repr), 'danger')
+        flash('无法获取具有主键的行 %s.' % str(pk_repr), 'danger')
         return redirect(url_for('table_content', table=table))
 
     if request.method == 'POST':
@@ -887,10 +887,10 @@ def table_delete(table, pk):
             with dataset.transaction() as txn:
                 n = model.delete().where(expr).execute()
         except Exception as exc:
-            flash('Delete failed: %s' % exc, 'danger')
-            app.logger.exception('Error attempting to delete row from %s.', table)
+            flash('删除失败: %s' % exc, 'danger')
+            app.logger.exception('尝试从 %s 中删除行时出错.', table)
         else:
-            flash('Successfully deleted %s record.' % n, 'success')
+            flash('成功删除 %s 记录.' % n, 'success')
             return redirect_to_previous(table)
 
     return render_template(
@@ -946,7 +946,7 @@ def table_export(table):
         selected = [c for c in (request.form.getlist('columns') or [])
                     if c in col_dict]
         if not selected:
-            flash('Please select one or more columns to export.', 'danger')
+            flash('请选择一个或多个要导出的列。', 'danger')
         else:
             model = dataset[table].model_class
             fields = [model._meta.columns[c] for c in selected]
@@ -954,8 +954,8 @@ def table_export(table):
             try:
                 return export(query, export_format, table)
             except Exception as exc:
-                flash('Error generating export: %s' % exc, 'danger')
-                app.logger.exception('Error generating export.')
+                flash('生成导出时出错: %s' % exc, 'danger')
+                app.logger.exception('生成导出时出错。')
 
     return render_template(
         'table_export.html',
@@ -972,9 +972,9 @@ def table_import(table):
     if request.method == 'POST':
         file_obj = request.files.get('file')
         if not file_obj:
-            flash('Please select an import file.', 'danger')
+            flash('请选择导入文件。', 'danger')
         elif not file_obj.filename.lower().endswith(('.csv', '.json')):
-            flash('Unsupported file-type. Must be a .json or .csv file.',
+            flash('不支持此文件类型。 必须是 .json 或 .csv 文件。',
                   'danger')
         else:
             if file_obj.filename.lower().endswith('.json'):
@@ -1007,11 +1007,11 @@ def table_import(table):
                         file_obj=stream,
                         strict=strict)
             except Exception as exc:
-                flash('Error importing file: %s' % exc, 'danger')
-                app.logger.exception('Error importing file.')
+                flash('导入文件错误: %s' % exc, 'danger')
+                app.logger.exception('导入文件错误。')
             else:
                 flash(
-                    'Successfully imported %s objects from %s.' % (
+                    '已成功从 %s 导入 %s 对象。' % (
                         count, file_obj.filename),
                     'success')
                 return redirect(url_for('table_content', table=table))
@@ -1035,11 +1035,11 @@ def drop_table(table):
                 model_class = dataset[table].model_class
                 model_class.drop_table()
         except Exception as exc:
-            flash('Error attempting to drop %s "%s".' % (label, table), 'danger')
-            app.logger.exception('Error attempting to drop %s "%s".', label, table)
+            flash('尝试删除时出错 %s "%s".' % (label, table), 'danger')
+            app.logger.exception('尝试删除时出错 %s "%s".', label, table)
         else:
             dataset.update_cache()  # Update all tables.
-            flash('%s "%s" dropped successfully.' %
+            flash('%s "%s" 删除成功。' %
                   ('view' if is_view else 'table', table),
                   'success')
             return redirect(url_for('index'))
@@ -1171,7 +1171,7 @@ class PrefixMiddleware(object):
             return self.app(environ, start_response)
         else:
             start_response('404', [('Content-Type', 'text/plain')])
-            return ['URL does not match application prefix.'.encode()]
+            return ['URL与应用程序前缀不匹配。'.encode()]
 
 #
 # Script options.
@@ -1183,55 +1183,55 @@ def get_option_parser():
         '-p',
         '--port',
         default=8080,
-        help='Port for web interface, default=8080',
+        help='web端口, default=8080',
         type='int')
     parser.add_option(
         '-H',
         '--host',
         default='127.0.0.1',
-        help='Host for web interface, default=127.0.0.1')
+        help='访问地址, default=127.0.0.1')
     parser.add_option(
         '-d',
         '--debug',
         action='store_true',
-        help='Run server in debug mode')
+        help='在调试模式下运行服务器')
     parser.add_option(
         '-x',
         '--no-browser',
         action='store_false',
         default=True,
         dest='browser',
-        help='Do not automatically open browser page.')
+        help='不要自动打开浏览器页面。')
     parser.add_option(
         '-l',
         '--log-file',
         dest='log_file',
-        help='Filename for application logs.')
+        help='程序log文件名。')
     parser.add_option(
         '-P',
         '--password',
         action='store_true',
         dest='prompt_password',
-        help='Prompt for password to access database browser.')
+        help='提示输入密码以访问数据库浏览器。')
     parser.add_option(
         '-r',
         '--read-only',
         action='store_true',
         dest='read_only',
-        help='Open database in read-only mode.')
+        help='以只读模式打开数据库。')
     parser.add_option(
         '-R',
         '--rows-per-page',
         default=50,
         dest='rows_per_page',
-        help='Number of rows to display per page in content tab (default=50)',
+        help='在内容选项卡中每页显示的行数 (default=50)',
         type='int')
     parser.add_option(
         '-Q',
         '--query-rows-per-page',
         default=1000,
         dest='query_rows_per_page',
-        help='Number of rows to display per page in query tab (default=1000)',
+        help='在查询选项卡中每页显示的行数 (default=1000)',
         type='int')
     parser.add_option(
         '-T',
@@ -1239,37 +1239,35 @@ def get_option_parser():
         action='store_false',
         default=True,
         dest='truncate_values',
-        help=('Disable truncating long text values. By default text values '
-              'are ellipsized after 50 characters and the full text is shown '
-              'on click.'))
+        help='禁用截断长文本值。默认情况下，文本值在50个字符后省略号，单击时显示全文。')
     parser.add_option(
         '-u',
         '--url-prefix',
         dest='url_prefix',
-        help='URL prefix for application.')
+        help='应用程序的URL前缀。')
     parser.add_option(
         '-f',
         '--foreign-keys',
         action='store_true',
         dest='foreign_keys',
-        help='Enable the foreign_keys pragma.')
+        help='启用foreign_keys杂注。')
     parser.add_option(
         '-e',
         '--extension',
         action='append',
         dest='extensions',
-        help='Path or name of loadable extension.')
+        help='可加载扩展的路径或名称。')
     ssl_opts = optparse.OptionGroup(parser, 'SSL options')
     ssl_opts.add_option(
         '-c',
         '--ssl-cert',
         dest='ssl_cert',
-        help='SSL certificate file path.')
+        help='SSL 证书文件路径。')
     ssl_opts.add_option(
         '-k',
         '--ssl-key',
         dest='ssl_key',
-        help='SSL private key file path.')
+        help='SSL 私有 key 文件路径。')
     ssl_opts.add_option(
         '-a',
         '--ad-hoc',
