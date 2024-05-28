@@ -1300,7 +1300,7 @@ def install_auth_handler(password):
     def check_password():
         if not session.get('authorized') and request.path != '/login/' and \
            not request.path.startswith(('/static/', '/favicon')):
-            flash('You must log-in to view the database browser.', 'danger')
+            flash('您必须登录才能查看数据库浏览器。', 'danger')
             session['next_url'] = request.base_url
             return redirect(url_for('login'))
 
@@ -1318,15 +1318,14 @@ def initialize_app(filename, read_only=False, password=None, url_prefix=None,
 
     if read_only:
         if sys.version_info < (3, 4, 0):
-            die('Python 3.4.0 or newer is required for read-only access.')
+            die('只读访问需要Python 3.4.0或更新版本。')
         if peewee_version < (3, 5, 1):
-            die('Peewee 3.5.1 or newer is required for read-only access.')
+            die('只读访问需要Peewee 3.5.1或更新版本。')
         db = SqliteDatabase('file:%s?mode=ro' % filename, uri=True)
         try:
             db.connect()
         except OperationalError:
-            die('Unable to open database file in read-only mode. Ensure that '
-                'the database exists in order to use read-only mode.')
+            die('无法以只读模式打开数据库文件。确保数据库存在，以便使用只读模式。')
         db.close()
     else:
         db = SqliteDatabase(filename)
@@ -1352,7 +1351,7 @@ def main():
     parser = get_option_parser()
     options, args = parser.parse_args()
     if not args:
-        die('Error: missing required path to database file.')
+        die('错误：缺少数据库文件所需的路径。')
 
     if options.log_file:
         fmt = logging.Formatter('[%(asctime)s] - [%(levelname)s] - %(message)s')
@@ -1371,10 +1370,10 @@ def main():
             password = os.environ['SQLITE_WEB_PASSWORD']
         else:
             while True:
-                password = getpass('Enter password: ')
-                password_confirm = getpass('Confirm password: ')
+                password = getpass('输入密码: ')
+                password_confirm = getpass('确认密码: ')
                 if password != password_confirm:
-                    print('Passwords did not match!')
+                    print('密码不匹配！')
                 else:
                     break
 
@@ -1403,12 +1402,12 @@ def main():
 
     if options.ssl_cert and options.ssl_key:
         if not os.path.exists(options.ssl_cert) or not os.path.exists(options.ssl_key):
-            die('ssl cert or ssl key not found. Please check the file-paths.')
+            die('找不到ssl证书或ssl密钥。请检查文件路径。')
         kwargs['ssl_context'] = (options.ssl_cert, options.ssl_key)
     elif options.ssl_cert:
-        die('ssl key "-k" is required alongside the ssl cert')
+        die('ssl证书的“-k”需要ssl证书')
     elif options.ssl_key:
-        die('ssl cert "-c" is required alongside the ssl key')
+        die('ssl证书的"-c"需要ssl证书')
 
     # Run WSGI application.
     app.run(host=options.host, port=options.port, debug=options.debug, **kwargs)
